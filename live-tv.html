@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f111a">
+<title>UMRANI TV — Live TV</title>
+<link rel="icon" href="umrani-photo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg:#090a10; --panel:#161923; --panel2:#1e2230; --accent:#8b5cf6;
+  --text:#ffffff; --muted:#8b92a5; --line:#282e3e; --red:#ef4444; --green:#22c55e;
+  --fd:'Outfit',sans-serif; --fb:'Manrope',sans-serif;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px)
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden;padding-top:var(--safe-t);padding-bottom:var(--safe-b)}
+
+/* STICKY PLAYER WRAPPER */
+.player-wrapper{position:sticky;top:0;z-index:100;background:var(--bg);box-shadow:0 8px 20px rgba(0,0,0,0.6)}
+
+/* PLAYER SECTION */
+.player-section{background:#000;width:100%;aspect-ratio:16/9;position:relative}
+.video-container{width:100%;height:100%;position:relative}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+.brand-watermark{position:absolute;top:8px;left:8px;right:auto;z-index:10;pointer-events:none;background:transparent;padding:0;border:0;box-shadow:none}
+.brand-watermark span{display:inline-block;color:#fff;background:transparent;padding:0;margin:0;border:0;border-radius:0;font:800 16px Outfit,sans-serif;letter-spacing:.5px;line-height:1.2;white-space:nowrap;text-shadow:0 0 3px #fff,0 0 7px #a855f7,0 0 13px #9333ea,0 0 22px #7e22ce;animation:umraniNeon 1.8s ease-in-out infinite;transform-origin:left top}
+@keyframes umraniNeon{0%,100%{opacity:1;transform:scale(1);text-shadow:0 0 3px #fff,0 0 7px #a855f7,0 0 13px #9333ea,0 0 22px #7e22ce}50%{opacity:.92;transform:scale(1.035);text-shadow:0 0 5px #fff,0 0 11px #d8b4fe,0 0 19px #a855f7,0 0 30px #7e22ce}}
+@media(prefers-reduced-motion:reduce){.brand-watermark span{animation:none}}
+
+/* OVERLAY */
+#ov{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.4);z-index:5;flex-direction:column;gap:10px;
+  background-image:url('umrani-photo.jpg');
+  background-size:cover;background-position:center;
+}
+
+/* SEARCH */
+.search-wrap{padding:16px 20px 8px 20px;background:var(--bg)}
+.search-box{position:relative;display:flex;align-items:center}
+.search-box i{position:absolute;left:16px;color:var(--muted);font-size:1rem}
+.search-box input{width:100%;background:#151822;border:1px solid #232736;color:#fff;padding:14px 16px 14px 46px;border-radius:12px;font:500 0.9rem var(--fb);outline:none;transition:0.2s}
+.search-box input::placeholder{color:var(--muted)}
+.search-box input:focus{border-color:var(--accent)}
+
+/* TABS (SECTIONS) */
+.tabs-wrap{display:flex;gap:10px;padding:8px 20px 16px 20px;overflow-x:auto;scrollbar-width:none}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tab-btn{background:var(--panel);color:var(--muted);border:1px solid var(--line);padding:10px 20px;border-radius:20px;font:600 0.85rem var(--fb);cursor:pointer;white-space:nowrap;transition:0.2s;flex:1;text-align:center}
+.tab-btn:hover{color:#fff;border-color:var(--muted)}
+.tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 12px rgba(139,92,246,0.3)}
+
+/* CATEGORY SECTIONS */
+.category-section{margin-bottom:24px}
+.category-title{padding:0 20px 12px 20px;font:700 1.1rem var(--fd);display:flex;align-items:center;gap:8px;color:#fff;text-transform:capitalize}
+.category-title i{color:var(--accent);font-size:1rem}
+
+/* GRID */
+.channel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 12px}
+@media(min-width:600px){.channel-grid{gap:14px;padding:0 20px}.category-title{padding:0 20px 12px 20px}}
+
+/* CHANNEL CARD */
+.ch-card{background:var(--panel);border-radius:10px;overflow:hidden;position:relative;cursor:pointer;transition:transform 0.2s;border:1px solid var(--line)}
+.ch-card:hover{transform:translateY(-3px)}
+.ch-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+
+.ch-thumb{width:100%;aspect-ratio:16/10;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:10px 10px 0 0}
+.ch-thumb img{width:85%;height:85%;object-fit:contain}
+.ch-thumb .fallback-icon{font-size:1.5rem;color:rgba(255,255,255,0.5)}
+
+/* BADGES */
+.badge{position:absolute;top:5px;padding:2px 5px;border-radius:4px;font:800 0.5rem var(--fb);letter-spacing:0.3px;z-index:2}
+.badge.free{left:5px;background:var(--green);color:#fff}
+.badge.live{right:5px;background:var(--red);color:#fff;display:flex;align-items:center;gap:3px}
+.badge.live::before{content:"";width:4px;height:4px;background:#fff;border-radius:50%;display:inline-block}
+
+@media(min-width:600px){
+  .badge{top:8px;padding:3px 8px;font-size:0.6rem}
+  .badge.free{left:8px}
+  .badge.live{right:8px}
+  .badge.live::before{width:5px;height:5px}
+}
+
+/* CARD FOOTER */
+.ch-info{padding:6px 8px;background:var(--panel)}
+.ch-name{font:700 0.7rem var(--fb);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+@media(min-width:600px){.ch-info{padding:10px 12px}.ch-name{font-size:0.8rem}}
+
+/* SPLASH LOADER */
+.loader{
+  position:fixed;inset:0;
+  background:#090a10;
+  z-index:1000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity 0.7s cubic-bezier(0.4,0,0.2,1),visibility 0.7s cubic-bezier(0.4,0,0.2,1);
+  overflow:hidden;
+}
+.loader.hide{opacity:0;visibility:hidden;pointer-events:none}
+
+.loader-bg-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:0.35;
+  animation:orbFloat 6s ease-in-out infinite alternate;
+}
+.loader-bg-orb.orb-1{width:220px;height:220px;background:#8b5cf6;top:15%;left:10%;}
+.loader-bg-orb.orb-2{width:260px;height:260px;background:#3b82f6;bottom:15%;right:10%;animation-delay:-3s;}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,40px) scale(1.15)}}
+
+.loader-card{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(22, 25, 35, 0.5);
+  padding:35px 30px;border-radius:24px;
+  border:1px solid rgba(255,255,255,0.08);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 20px 50px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+  width:290px;
+}
+
+.loader-image-slot{
+  position:relative;width:220px;height:105px;margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;
+}
+.loader-image-slot::before{
+  content:"";position:absolute;inset:-7px;border-radius:18px;
+  border:2px solid rgba(139,92,246,0.85);
+  animation:ringSpin 4s linear infinite;
+  box-shadow:0 0 16px rgba(139,92,246,0.45);
+}
+.loader-image-slot::after{
+  content:"";position:absolute;inset:-2px;border-radius:16px;
+  border:1px solid rgba(255,255,255,0.18);
+}
+@keyframes ringSpin{to{transform:rotate(360deg)}}
+
+.loader-image-slot img{
+  width:100%;height:100%;object-fit:cover;border-radius:12px;
+  animation:logoPulse 2.2s ease-in-out infinite;
+  box-shadow:0 8px 25px rgba(0,0,0,0.5);
+}
+@keyframes logoPulse{
+  0%,100%{transform:scale(1);filter:drop-shadow(0 0 10px rgba(139,92,246,0.4))}
+  50%{transform:scale(1.06);filter:drop-shadow(0 0 22px rgba(139,92,246,0.8))}
+}
+.loader-image-slot .fallback-logo{
+  width:100px;height:100px;border-radius:12px;
+  background:radial-gradient(circle at 30% 30%, #1e2230, #0f111a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;color:var(--accent);animation:logoPulse 2.2s ease-in-out infinite;
+}
+
+.loader-text{
+  font:800 1.35rem var(--fd);letter-spacing:1px;
+  background:linear-gradient(90deg, #ffffff 0%, #c4b5fd 50%, #ffffff 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:textShimmer 2.5s linear infinite;
+  text-align:center;
+}
+@keyframes textShimmer{to{background-position:200% center}}
+
+.voice-section{
+  display:flex;align-items:center;justify-content:center;
+  gap:5px;height:24px;margin:12px 0 6px 0;
+  padding:4px 12px;background:rgba(139,92,246,0.1);
+  border-radius:20px;border:1px solid rgba(139,92,246,0.25);
+}
+.voice-wave{display:flex;align-items:center;gap:3px;height:100%;}
+.voice-bar{
+  width:3px;background:linear-gradient(180deg, #c4b5fd, #8b5cf6);
+  border-radius:3px;animation:waveBounce 1.2s ease-in-out infinite alternate;
+}
+.voice-bar:nth-child(1){height:60%;animation-delay:0.1s;}
+.voice-bar:nth-child(2){height:90%;animation-delay:0.3s;}
+.voice-bar:nth-child(3){height:40%;animation-delay:0.15s;}
+.voice-bar:nth-child(4){height:100%;animation-delay:0.4s;}
+.voice-bar:nth-child(5){height:70%;animation-delay:0.2s;}
+.voice-bar:nth-child(6){height:50%;animation-delay:0.35s;}
+
+@keyframes waveBounce{
+  0%{transform:scaleY(0.3);opacity:0.5}
+  100%{transform:scaleY(1.1);opacity:1}
+}
+
+.voice-status{
+  font:600 0.7rem var(--fb);color:#c4b5fd;letter-spacing:0.5px;
+  text-transform:uppercase;margin-left:4px;
+}
+
+.loader-progress-wrap{width:100%;margin-top:10px;}
+.loader-progress-info{
+  display:flex;justify-content:space-between;align-items:center;
+  font:600 0.72rem var(--fb);color:var(--muted);margin-bottom:6px;
+}
+.loader-progress-track{
+  width:100%;height:5px;background:rgba(255,255,255,0.08);
+  border-radius:6px;overflow:hidden;position:relative;
+}
+.loader-progress-bar{
+  position:absolute;top:0;left:0;bottom:0;width:0%;
+  background:linear-gradient(90deg, #8b5cf6, #ec4899);
+  border-radius:6px;
+  animation: progressAnim 4.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes progressAnim{
+  0%{width:0%}
+  40%{width:55%}
+  75%{width:88%}
+  100%{width:100%}
+}
+
+/* OVERLAY SPINNER */
+.ov-spinner{width:44px;height:44px;border-radius:50%;border:3px solid rgba(255,255,255,0.15);border-top-color:#fff;animation:ringSpin 0.9s linear infinite}
+
+/* PULSE GLOW */
+.ch-card.active::after{content:"";position:absolute;inset:-1px;border-radius:10px;border:1px solid var(--accent);animation:glowPulse 1.8s ease-in-out infinite;pointer-events:none}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,0.35)}50%{box-shadow:0 0 12px 2px rgba(139,92,246,0.55)}}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#fff;color:#000;padding:10px 20px;border-radius:30px;font-weight:700;font-size:0.8rem;opacity:0;pointer-events:none;transition:0.3s;z-index:2000}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.empty-state{text-align:center;padding:40px;color:var(--muted);grid-column:1/-1}
+
+/* FOOTER */
+.app-footer{
+  text-align:center;
+  padding:24px 20px 32px 20px;
+  font:600 0.78rem var(--fb);
+  color:var(--muted);
+  letter-spacing:0.3px;
+  border-top:1px solid var(--line);
+  margin-top:8px;
+  background:var(--bg);
+}
+.app-footer .heart{
+  color:var(--red);
+  animation:heartBeat 1.6s ease-in-out infinite;
+  display:inline-block;
+}
+@keyframes heartBeat{
+  0%,100%{transform:scale(1)}
+  15%{transform:scale(1.25)}
+  30%{transform:scale(1)}
+  45%{transform:scale(1.2)}
+  60%{transform:scale(1)}
+}
+
+.dev-link{
+  color:var(--accent);
+  font-weight:800;
+  letter-spacing:0.4px;
+  text-decoration:none;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  transition:color 0.2s, transform 0.2s;
+  position:relative;
+}
+.dev-link:hover{
+  color:#c4b5fd;
+  transform:translateY(-1px);
+}
+.dev-link .wa-icon{
+  font-size:0.85rem;
+  color:#25d366;
+  transition:transform 0.25s;
+}
+.dev-link:hover .wa-icon{
+  transform:scale(1.15) rotate(-8deg);
+}
+
+.app-footer .footer-line{
+  display:block;
+  margin-top:8px;
+  font-size:0.68rem;
+  color:#5b6379;
+  font-weight:500;
+}
+.blink-heart {
+  color: red;
+  animation: blink 1.6s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- CUSTOM SPLASH AUDIO ELEMENT -->
+<audio id="splash-audio" preload="auto">
+  <source src="YOUR_FAVORITE_AUDIO_URL.mp3" type="audio/mpeg">
+</audio>
+
+<!-- SPLASH LOADER -->
+<div id="loader" class="loader">
+  <div class="loader-bg-orb orb-1"></div>
+  <div class="loader-bg-orb orb-2"></div>
+  
+  <div class="loader-card">
+    <div class="loader-image-slot">
+      <img
+        src="umrani-photo.jpg"
+        alt="UMRANI TV Logo"
+        onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','<div class=\'fallback-logo\'><i class=\'fa-solid fa-tv\'></i></div>')"
+      >
+    </div>
+    
+    <div class="loader-text">UMRANI TV</div>
+    
+    <div class="voice-section">
+      <i class="fa-solid fa-heart blink-heart"></i>
+      <div class="voice-wave">
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+      </div>
+      <span class="voice-status">Live Stream</span>
+    </div>
+
+    <div class="loader-progress-wrap">
+      <div class="loader-progress-info">
+        <span>Connecting...</span>
+        <span id="loader-pct">0%</span>
+      </div>
+      <div class="loader-progress-track">
+        <div class="loader-progress-bar"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STICKY PLAYER -->
+<div class="player-wrapper">
+  <div class="player-section">
+    <div class="video-container">
+      <video id="video" playsinline controls preload="none" poster="umrani-photo.jpg"></video>
+      <div class="brand-watermark">
+        <span>𓆩UM꧊ꝛ͢ɑ͢Ni𓂃TV</span>
+      </div>
+      <div id="ov">
+        <i class="fa-solid fa-circle-play" style="font-size:3rem;color:rgba(255,255,255,0.8);text-shadow:0 2px 10px rgba(0,0,0,0.5)"></i>
+        <p style="color:#fff;font-size:0.9rem;font-weight:700;text-shadow:0 2px 4px rgba(0,0,0,0.8)">Select a channel to play</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <div class="search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input id="search" type="search" placeholder="Search channels on UMRANI TV..." autocomplete="off">
+  </div>
+</div>
+
+<!-- SECTIONS: JAZZ TV & ZONG TV -->
+<div class="tabs-wrap" id="tabs">
+  <button class="tab-btn active" data-tab="jazz">Jazz Free TV</button>
+  <button class="tab-btn" data-tab="zong">Zong Free TV</button>
+</div>
+
+<!-- CHANNEL LIST -->
+<div id="list" style="padding-bottom:30px;"></div>
+
+<!-- FOOTER -->
+<footer class="app-footer">
+  Created with <span class="heart">&#10084;</span> by
+  <a class="dev-link"
+     href="https://wa.me/923702866763"
+     target="_blank"
+     rel="noopener noreferrer"
+     title="Contact Ubaidullah on WhatsApp">
+     Ubaidullah
+     <i class="fa-brands fa-whatsapp wa-icon"></i>
+  </a>
+  <span class="footer-line">&copy; 2022-26 UMRANI TV &mdash; All Rights Reserved</span>
+</footer>
+
+<div id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const video=$('video'), list=$('list'), tabsContainer=$('tabs');
+
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch{return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+};
+
+let channels=[], hls=null, gen=0, selected=-1, retries=0;
+let toastT=null, retryT=null;
+let currentProvider = 'jazz'; // Default selected section
+
+const keyOf=c=>c.name+'|'+c.url;
+const validURL=v=>{if(typeof v!=='string'||!v.trim())return false;try{const u=new URL(v.trim());return /^https?:$/.test(u.protocol)}catch{return false}};
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600)};
+
+/* ALL CHANNELS (JAZZ & ZONG) */
+const ALL_CHANNELS = [
+  // JAZZ CHANNELS
+  {name: "Sports Cricket", provider: "jazz", url: "https://awscdn1.tamashaweb.com/out/v1/ce90227a71444af18fddc88750c08f76/index.m3u8", logo: ""},
+  {name: "Sports Cricket Alt", provider: "jazz", url: "https://cdn4aws.tamashaweb.com/out/v1/fae477677d214561b1601c23c95fe20a/index.m3u8", logo: ""},
+  {name: "Green Entertainment", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/Green_Entertainment-abr/playlist.m3u8", logo: "https://i.ibb.co/j9bMhLzv/1702552123-logo-2.webp"},
+  {name: "ARY Digital", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/ARYdigital-abr/playlist.m3u8", logo: ""},
+  {name: "Hum TV", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/humTV-abr/playlist.m3u8", logo: ""},
+  {name: "ARY Zindagi", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/ARYzindagi-abr/playlist.m3u8", logo: ""},
+  {name: "Play Entertainment", provider: "jazz", url: "https://cdn21lhr.tamashaweb.com:8087/jazzauth/play-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTYvMjAyNiAxMDo0Mzo1MCBBTSZoYXNoX3ZhbHVlPXJObmxjZ1RCQmpzdDZJR0gvMVRrZUE9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "Aaj Entertainment", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/AajEntertainment-abr/playlist.m3u8", logo: ""},
+  {name: "Inplus Tv", provider: "jazz", url: "https://cdn05khi.tamashaweb.com:8087/jazzauth/Inplus-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiAxMDozNzozMiBBTSZoYXNoX3ZhbHVlPXNHOUdicVFiN0owem1zUjl3dUpvVFE9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "Aruj Tv", provider: "jazz", url: "https://cdn05khi.tamashaweb.com:8087/jazzauth/AroojTV-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiA5OjQ4OjQzIEFNJmhhc2hfdmFsdWU9STNZZ1BUU0h1TjRQMXdpR2l3bG9xZz09JnZhbGlkbWludXRlcz02MA%3D%3D", logo: ""},
+  {name: "See TV", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/seeTV-abr/playlist.m3u8", logo: ""},
+  {name: "BBC First", provider: "jazz", url: "https://cdn22lhr.tamashaweb.com:8087/jazzauth/BBC-First-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiAxMDoyOToyMiBBTSZoYXNoX3ZhbHVlPXdrb1cxdGZGT0hUaitaaFdrUnF3K0E9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "Urdu 1", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/urdu-1-abr/playlist.m3u8", logo: ""},
+  {name: "Saudi Sunnah", provider: "jazz", url: "https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/SaudiSunnah(NW)-abr/playlist.m3u8", logo: ""},
+  {name: "Saudi Makkah", provider: "jazz", url: "https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/Saudimakkah(nw)-abr/playlist.m3u8", logo: ""},
+  {name: "Paigham TV", provider: "jazz", url: "https://cdn23lhr.tamashaweb.com:8087/jazzauth/PaighamTV-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiAxMDoyNToxNSBBTSZoYXNoX3ZhbHVlPWFqWEhLTnh1REw5ZGV1TnVCZnh5R0E9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "MinimaX tv", provider: "jazz", url: "https://cdn22lhr.tamashaweb.com:8087/jazzauth/Minimax-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiA5OjI3OjI0IEFNJmhhc2hfdmFsdWU9RXZHeXZ4L0h0aHNoV3FkcWVRWDFWQT09JnZhbGlkbWludXRlcz02MA%3D%3D", logo: ""},
+  {name: "Aur Life", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/jazzauth/AurLife-abr/playlist.m3u8", logo: ""},
+  {name: "BOL Entertainment", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/BolEntertainment-abr/playlist.m3u8", logo: ""},
+  {name: "Express Entertainment", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/ExpressEntertainment-abr/playlist.m3u8", logo: ""},
+  {name: "SAB TV", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/SabTV-abr/playlist.m3u8", logo: ""},
+  {name: "AAN TV", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/AAN-TV-abr/playlist.m3u8", logo: ""},
+  {name: "Hum Sitaray", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/HumSitaray-abr/playlist.m3u8", logo: ""},
+  {name: "SET Entertainment", provider: "jazz", url: "https://cdn23lhr.tamashaweb.com:8087/YlUHeDQb7a/SetEntertainment-abr/live/vsat-setent-L/chunks.m3u8", logo: ""},
+  {name: "TV One", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/TVOne-abr/playlist.m3u8", logo: ""},
+  {name: "A Plus", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/Aplus-abr/playlist.m3u8", logo: ""},
+  {name: "LTN Family", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/LTNFamily-abr/playlist.m3u8", logo: ""},
+  {name: "Apna Channel", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/Apna-abr/playlist.m3u8", logo: ""},
+  {name: "PTV Home", provider: "jazz", url: "https://cdn05khi.tamashaweb.com:8087/jazzauth/PTVHome-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTYvMjAyNiAxMDowNjo0OSBBTSZoYXNoX3ZhbHVlPUY5MG1sVTFEL2JHMHNGSVpSbnhZSWc9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "PTV National", provider: "jazz", url: "https://cdn22lhr.tamashaweb.com:8087/jazzauth/PTVNational-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTYvMjAyNiAxMDowODoyMyBBTSZoYXNoX3ZhbHVlPTZ0TjlrcG5pL3FJSFMvVzZwaHV3L3c9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "Tamasha Life HD", provider: "jazz", url: "https://cdn22lhr.tamashaweb.com:8087/jazzauth/Tamasha-Life-HD-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTYvMjAyNiA5OjU5OjQ3IEFNJmhhc2hfdmFsdWU9MHgxSG81dXRMUng0cFZheGxQYlpWZz09JnZhbGlkbWludXRlcz02MA%3D%3D", logo: ""},
+  {name: "Tamasha Women HD", provider: "jazz", url: "https://cdn23lhr.tamashaweb.com:8087/jazzauth/Tamasha-Women-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiA5OjUyOjE4IEFNJmhhc2hfdmFsdWU9OWFpVTN3WHBOZjViRm1sSFB5QWZpUT09JnZhbGlkbWludXRlcz02MA%3D%3D", logo: ""},
+  {name: "Tamasha News HD", provider: "jazz", url: "https://cdn21lhr.tamashaweb.com:8087/jazzauth/Tamasha-News-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiA5OjU0OjQ1IEFNJmhhc2hfdmFsdWU9eUc5Yzd2Vm1SQ2dIWWJMV1N0eWMvQT09JnZhbGlkbWludXRlcz02MA%3D%3D", logo: ""},
+  {name: "Discovery Pakistan", provider: "jazz", url: "https://cdn05khi.tamashaweb.com:8087/jazzauth/DiscoveryPakistan-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTYvMjAyNiAxMDoxNzo1MSBBTSZoYXNoX3ZhbHVlPW93SXNSTmw3RU1MaHNLWGxucm40aWc9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "BBC EARTH", provider: "jazz", url: "https://cdn05khi.tamashaweb.com:8087/jazzauth/BBC-Lifestyle-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiAxMDoxMDo0MCBBTSZoYXNoX3ZhbHVlPVdVMDQwZktxeWxNRktvdGYxeE52NlE9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "CGTN Documentry", provider: "jazz", url: "https://cdn05khi.tamashaweb.com:8087/jazzauth/CgtnDocumentary-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiAxMDoxNzo1NSBBTSZoYXNoX3ZhbHVlPUlXK1VlNHZPdGlJakVzbkk1QUFIUlE9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "Euro Sports", provider: "jazz", url: "https://cdn21lhr.tamashaweb.com:8087/jazzauth/Eurosport-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiA5OjQxOjUzIEFNJmhhc2hfdmFsdWU9YUJxVGx6N3l1ZE1tV0pHTktCUDhYQT09JnZhbGlkbWludXRlcz02MA%3D%3D", logo: ""},
+  {name: "Ten Sports", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/157-3M/playlist.m3u8", logo: ""},
+  {name: "Film World", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/filmworld-abr/playlist.m3u8", logo: ""},
+  {name: "Filmax", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/Filmax-abr/playlist.m3u8", logo: ""},
+  {name: "ARY News", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/ARYnews-abr/playlist.m3u8", logo: ""},
+  {name: "GGN News", provider: "jazz", url: "https://cdn05khi.tamashaweb.com:8087/jazzauth/GNN-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9MTAvMTgvMjAyNiAxMDozMzoyMSBBTSZoYXNoX3ZhbHVlPU1JSjQzU3RUb3Z3bzR3VXJCWGV1N0E9PSZ2YWxpZG1pbnV0ZXM9NjA%3D", logo: ""},
+  {name: "Hum News", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/humnews-abr/playlist.m3u8", logo: ""},
+  {name: "Samaa TV", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/samaaTV-abr/playlist.m3u8", logo: ""},
+  {name: "BOL News", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/BolNews-abr/playlist.m3u8", logo: ""},
+  {name: "Express News", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/expressnews-abr/playlist.m3u8", logo: ""},
+  {name: "Aaj News", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/AajNews-abr/playlist.m3u8", logo: ""},
+  {name: "365 News", provider: "jazz", url: "https://cdn22lhr.tamashaweb.com:8087/jazzauth/365News-abr/playlist.m3u8", logo: ""},
+  {name: "A1 TV", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/A1TV-abr/live/vsat-124L/chunks.m3u8", logo: ""},
+  {name: "8XM", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/8xm-abr/playlist.m3u8", logo: ""},
+  {name: "Jalwa", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/jalwa-abr/playlist.m3u8", logo: ""},
+  {name: "Cartoon Network", provider: "jazz", url: "https://cdn12isb.tamashaweb.com:8087/YlUHeDQb7a/cartoonnetwork-abr/playlist.m3u8", logo: ""},
+  {name: "Animal Planet", provider: "jazz", url: "https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/AnimalPlanet-abr/playlist.m3u8", logo: ""},
+  {name: "Channel 189H", provider: "jazz", url: "https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/189H/playlist.m3u8", logo: ""},
+  {name: "Channel 157-3H", provider: "jazz", url: "https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/157-3H/playlist.m3u8", logo: ""},
+
+  // ZONG CHANNELS
+  {name: "Bol News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/bolnews-159-3/live/159-3M/chunks.m3u8", logo: ""},
+  {name: "Dunya News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/DunyaNews-113/live/113M/chunks.m3u8", logo: ""},
+  {name: "PTV Home", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/ptv-home-174/live/174H/chunks.m3u8", logo: ""},
+  {name: "Channel 185M", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/185M/chunks.m3u8", logo: ""},
+  {name: "Channel 186M", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/186M/chunks.m3u8", logo: ""},
+  {name: "Channel 123M", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/123M/chunks.m3u8", logo: ""},
+  {name: "UK44", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/UK44-145/live/145M/chunks.m3u8", logo: ""},
+  {name: "AAJ News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/AAJNews-124/live/124M/chunks.m3u8", logo: ""},
+  {name: "Hum TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/Hum-TV-136-3/live/136-3M/chunks.m3u8", logo: ""},
+  {name: "Capital TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/capitaltv-111/playlist.m3u8", logo: ""},
+  {name: "Madni TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/Madni-121/live/121M/chunks.m3u8", logo: ""},
+  {name: "Saudi Sunnah", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/SaudiSunnah-141/live/141M/chunks.m3u8", logo: ""},
+  {name: "Saudi Quran", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/SaudiQuran-142/live/142M/chunks.m3u8", logo: ""},
+  {name: "Express News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/ExpressNews-155/live/155M/chunks.m3u8", logo: ""},
+  {name: "Hum News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/Hum-news-80/live/80M/chunks.m3u8", logo: ""},
+  {name: "NEWS1", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/NEWS1-128/live/128M/chunks.m3u8", logo: ""},
+  {name: "Public TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/public-115/live/115M/chunks.m3u8", logo: ""},
+  {name: "Dawn News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/DawnNews-152/live/152M/chunks.m3u8", logo: ""},
+  {name: "Abb Tak News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/AbbTakNews-133/live/133L/chunks.m3u8", logo: ""},
+  {name: "Neo News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/Neo-110/live/110M/chunks.m3u8", logo: ""},
+  {name: "AAJ News (L)", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/AAJNews-124/live/124L/chunks.m3u8", logo: ""},
+  {name: "GNN News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/gnnnews-181/live/181M/chunks.m3u8", logo: ""},
+  {name: "Express Entertainment", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/EXP-ENT-159-1/live/159-1M/chunks.m3u8", logo: ""},
+  {name: "TV1", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/TV1-129/live/129M/chunks.m3u8", logo: ""},
+  {name: "Urdu1", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/Urdu1-158-4/live/158-4M/chunks.m3u8", logo: ""},
+  {name: "Apna Channel", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/ApnaChannel-134/live/134M/chunks.m3u8", logo: ""},
+  {name: "See TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/SeeTV-156/live/156L/chunks.m3u8", logo: ""},
+  {name: "LTN Family", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/ltn-family-158-2/live/158-2L/chunks.m3u8", logo: ""},
+  {name: "AAJ Entertainment", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/AAJENT-125/live/125M/chunks.m3u8", logo: ""},
+  {name: "A Plus", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/APlus-118/live/118L/chunks.m3u8", logo: ""},
+  {name: "Movie One", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/movie-one-176/live/176M/chunks.m3u8", logo: ""},
+  {name: "UK44 (alt)", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/UK44-145/live/145M/chunks.m3u8", logo: ""},
+  {name: "Cartoon Network", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/cartoon-network-87/live/87M/chunks.m3u8", logo: ""},
+  {name: "Baby TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/babytv-77/live/77M/chunks.m3u8", logo: ""},
+  {name: "Champion TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/champion-177/live/177M/chunks.m3u8", logo: ""},
+  {name: "8XM", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/8XM-131/live/131L/chunks.m3u8", logo: ""},
+  {name: "Channel 157-2M", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/157-2M/chunks.m3u8", logo: ""},
+  {name: "CNN", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/cnn-86/live/86M/chunks.m3u8", logo: ""},
+  {name: "Hum Masala", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/hum-masala-81/live/81M/chunks.m3u8", logo: ""},
+  {name: "Hum Sitaray", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/HumSitaray-157-4/live/157-4L/chunks.m3u8", logo: ""},
+  {name: "24 HD", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/24HD-146/live/146L/chunks.m3u8", logo: ""},
+  {name: "Mashriq TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/mashriq-109/live/109M/chunks.m3u8", logo: ""},
+  {name: "Channel 5", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/Channel5-159-4/live/159-4L/chunks.m3u8", logo: ""},
+  {name: "Filmworld", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/Filmworld-126/live/126M/chunks.m3u8", logo: ""},
+  {name: "Filmax", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/filmax-158-1/live/158-1L/chunks.m3u8", logo: ""},
+  {name: "DW", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/DW-136-4A/live/136-4AM/chunks.m3u8", logo: ""},
+  {name: "A1 TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/A1-184/live/184M/chunks.m3u8", logo: ""},
+  {name: "Rohi TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/ROHI-147/live/147M/chunks.m3u8", logo: ""},
+  {name: "City41", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/City41-143/live/143L/chunks.m3u8", logo: ""},
+  {name: "City42", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/City42-144/live/144L/chunks.m3u8", logo: ""},
+  {name: "Roze News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/RozeNews-139/live/139L/chunks.m3u8", logo: ""},
+  {name: "KTN News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/KTNNews-151/live/151M/chunks.m3u8", logo: ""},
+  {name: "KTN TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/KTN-149/live/149M/chunks.m3u8", logo: ""},
+  {name: "Sindh News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/SindhNews-136-2/live/136-2M/chunks.m3u8", logo: ""},
+  {name: "Sindh TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/SindhTV-136-1/live/136-1M/chunks.m3u8", logo: ""},
+  {name: "Time News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/time-news-172/live/172M/chunks.m3u8", logo: ""},
+  {name: "VSH TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/VSHTV-112/live/112L/chunks.m3u8", logo: ""},
+  {name: "Kashish TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/Kashish-150/live/150M/chunks.m3u8", logo: ""},
+  {name: "AVT Khyber", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/AVTKhyber-114/live/114M/chunks.m3u8", logo: ""},
+  {name: "Khyber News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/KhyberNews-160/live/160M/chunks.m3u8", logo: ""},
+  {name: "Pashto TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/PASHTOTV-119/live/119M/chunks.m3u8", logo: ""},
+  {name: "KAY2", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/KAY2-127/live/127L/chunks.m3u8", logo: ""},
+  {name: "Afghan TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/AfghanTV-140/live/140L/chunks.m3u8", logo: ""},
+  {name: "Sach TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/sachtv-183/live/183M/chunks.m3u8", logo: ""},
+  {name: "Waseb TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/WASEB-130/live/130M/chunks.m3u8", logo: ""},
+  {name: "Aruj TV", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/ArujTV-117/live/117M/chunks.m3u8", logo: ""},
+  {name: "K21 News", provider: "zong", url: "https://vodzong.mjunoon.tv:8087/streamtest/K21News-116/live/116M/chunks.m3u8", logo: ""}
+];
+
+function render(){
+  const q=$('search').value.trim().toLowerCase();
+  
+  // Filter by search term AND selected section (Jazz or Zong)
+  let filteredItems = channels.filter(c => {
+    const matchesSearch = !q || c.name.toLowerCase().includes(q);
+    const matchesProvider = c.provider === currentProvider;
+    return matchesSearch && matchesProvider;
+  });
+
+  list.replaceChildren();
+  
+  if(!filteredItems.length){
+    const e=document.createElement('div'); e.className='empty-state'; e.textContent='No channels found in this section.'; list.appendChild(e); return;
+  }
+
+  const sectionDiv = document.createElement('div'); sectionDiv.className = 'category-section';
+  const titleDiv = document.createElement('div'); titleDiv.className = 'category-title';
+  const sectionTitle = currentProvider === 'jazz' ? 'Jazz Free TV Channels' : 'Zong Free TV Channels';
+  titleDiv.innerHTML = `<i class="fa-solid fa-layer-group"></i> ${sectionTitle}`;
+  sectionDiv.appendChild(titleDiv);
+  
+  const gridDiv = document.createElement('div'); gridDiv.className = 'channel-grid';
+
+  filteredItems.forEach((c) => {
+    const globalIdx = channels.indexOf(c);
+    const card = document.createElement('div');
+    card.className = 'ch-card' + (globalIdx === selected ? ' active' : '');
+    card.onclick = () => play(globalIdx);
+
+    const thumb = document.createElement('div'); thumb.className = 'ch-thumb';
+    const colors = ['#006b56','#002f6c','#0a1a44','#7a5c00','#1c3b00','#4a0e15'];
+    thumb.style.background = colors[globalIdx % colors.length];
+
+    const bFree = document.createElement('span'); bFree.className='badge free'; bFree.textContent='FREE';
+    const bLive = document.createElement('span'); bLive.className='badge live'; bLive.textContent='LIVE';
+    thumb.append(bFree, bLive);
+
+    if(c.logo) {
+      const img = document.createElement('img');
+      img.src = c.logo; img.loading = 'lazy';
+      img.onerror = () => { img.style.display='none'; thumb.innerHTML += `<i class="fa-solid fa-tv fallback-icon"></i>`; };
+      thumb.appendChild(img);
+    } else {
+      const txt = document.createElement('div');
+      txt.innerHTML = `<span style="font:800 0.9rem var(--fd);color:#fff;text-align:center;padding:0 5px;display:block;line-height:1.2">${c.name}</span>`;
+      thumb.appendChild(txt);
+    }
+
+    const info = document.createElement('div'); info.className = 'ch-info';
+    const name = document.createElement('div'); name.className = 'ch-name'; name.textContent = c.name;
+    info.appendChild(name);
+    card.append(thumb, info);
+    gridDiv.appendChild(card);
+  });
+
+  sectionDiv.appendChild(gridDiv);
+  list.appendChild(sectionDiv);
+}
+
+/* SECTION TAB CLICK EVENT */
+tabsContainer.addEventListener('click', (e) => {
+  if(e.target.classList.contains('tab-btn')) {
+    tabsContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    e.target.classList.add('active');
+    currentProvider = e.target.dataset.tab;
+    render();
+  }
+});
+
+function destroy(){
+  gen++; clearTimeout(retryT);
+  if(hls){hls.destroy(); hls=null}
+  video.pause(); video.onerror=video.onplaying=video.onwaiting=video.onpause=null;
+  video.removeAttribute('src'); video.load(); return gen;
+}
+
+function overlay(msg,icon){
+  const o=$('ov'); o.style.display='flex';
+  o.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('umrani-photo.jpg')";
+  const isSpin = icon.indexOf('fa-spinner')>-1;
+  const iconHTML = isSpin
+    ? '<div class="ov-spinner"></div>'
+    : `<i class="fa-solid ${icon}" style="font-size:3rem;color:rgba(255,255,255,0.85);text-shadow:0 2px 10px rgba(0,0,0,0.5)"></i>`;
+  o.innerHTML = iconHTML + `<p style="color:#fff;font-size:0.9rem;font-weight:700;text-shadow:0 2px 4px rgba(0,0,0,0.8);margin-top:12px">${msg}</p>`;
+}
+const hideOverlay=()=>$('ov').style.display='none';
+
+function play(index,{auto=false}={}){
+  const c=channels[index];
+  if(!c||!validURL(c.url)){toast('Invalid stream link.');return}
+  const g=destroy(); selected=index; retries=0;
+  store.set('stv_last',keyOf(c));
+  render();
+  start(c,g);
+  if(!auto) toast('Playing: '+c.name);
+}
+
+function fail(g,msg,c){
+  if(g!==gen)return;
+  overlay(msg,'fa-triangle-exclamation');
+}
+
+/* ZERO-BUFFER / INSTANT PLAYBACK CONFIGURATION */
+function start(c,g){
+  hideOverlay();
+  video.onerror=()=>fail(g,'Stream unavailable.',c);
+  video.onplaying=()=>{if(g!==gen)return; hideOverlay(); retries=0;};
+  video.onwaiting=()=>{if(g!==gen)return;};
+
+  const forceInstantPlay = () => {
+    if(g !== gen) return;
+    const p = video.play();
+    if(p !== undefined){
+      p.catch(() => {
+        video.muted = true;
+        video.play().catch(() => overlay('Tap play to start','fa-circle-play'));
+      });
+    }
+  };
+
+  if(window.Hls && Hls.isSupported()){
+    const inst = new Hls({
+      enableWorker: true,
+      lowLatencyMode: true,
+      backBufferLength: 0,
+      maxBufferLength: 1,
+      maxMaxBufferLength: 2,
+      maxBufferHole: 0.1,
+      liveSyncDurationCount: 1,
+      liveMaxLatencyDurationCount: 3,
+      startLevel: -1
+    });
+    hls = inst;
+    inst.attachMedia(video);
+    inst.on(Hls.Events.MEDIA_ATTACHED, () => {
+      if(g === gen) inst.loadSource(c.url);
+    });
+    inst.on(Hls.Events.MANIFEST_PARSED, () => forceInstantPlay());
+    inst.on(Hls.Events.FRAG_BUFFERED, () => forceInstantPlay());
+
+    inst.on(Hls.Events.ERROR, (e, d) => {
+      if(g !== gen || !d.fatal) return;
+      if(retries >= 3){ destroy(); fail(g, 'Playback failed.', c); return; }
+      retries++;
+      if(d.type === Hls.ErrorTypes.NETWORK_ERROR){
+        clearTimeout(retryT); retryT = setTimeout(() => { if(g === gen) inst.startLoad(); }, 500);
+      } else if(d.type === Hls.ErrorTypes.MEDIA_ERROR){ inst.recoverMediaError(); }
+    });
+  } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+    video.src = c.url;
+    forceInstantPlay();
+  } else fail(g, 'HLS not supported.', c);
+}
+
+function load(){
+  channels = ALL_CHANNELS.filter(c => validURL(c.url));
+  selected = -1;
+  render();
+}
+
+/* SPLASH LOADER & AUDIO PLAYER */
+const SPLASH_DURATION = 5000;
+const pctElem = $('loader-pct');
+const splashAudio = $('splash-audio');
+let startT = null;
+
+if(splashAudio){
+  splashAudio.volume = 0.7;
+  splashAudio.play().catch(err => {
+    console.log("Audio autoplay restricted by browser policy:", err);
+  });
+}
+
+function updatePct(timestamp){
+  if(!startT) startT = timestamp;
+  const elapsed = timestamp - startT;
+  const progress = Math.min(Math.floor((elapsed / SPLASH_DURATION) * 100), 100);
+  if(pctElem) pctElem.textContent = progress + '%';
+  if(elapsed < SPLASH_DURATION){
+    requestAnimationFrame(updatePct);
+  }
+}
+requestAnimationFrame(updatePct);
+
+setTimeout(()=>{
+  $('loader').classList.add('hide');
+  if(splashAudio){
+    splashAudio.pause();
+    splashAudio.currentTime = 0;
+  }
+}, SPLASH_DURATION);
+
+$('search').addEventListener('input', render);
+
+load();
+})();
+</script>
+</body>
+</html>
