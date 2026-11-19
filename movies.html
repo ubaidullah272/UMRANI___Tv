@@ -1,1 +1,109 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UMRANI TV — Movies</title><link rel="stylesheet" href="style.css"></head><body><header class="topbar"><a class="brand" href="index.html">UMRANI <span>TV</span></a></header><main class="page"><a class="back" href="index.html">← Home</a><h1 class="title">🍿🎥 Movies</h1><div id="movieList" class="items"></div><section id="player" class="player"><h3 id="playerTitle"></h3><div id="frame" class="frame"></div><div class="controls"><label>Brightness <input type="range" min="50" max="150" value="100" oninput="brightness(this.value)"></label><label>Volume <input type="range" min="0" max="100" value="80" oninput="volume(this.value)"><span id="volumeValue">80%</span></label><button class="btn" onclick="fullscreen()">Fullscreen</button><button class="btn close" onclick="closePlayer()">Close ✕</button></div></section></main><script src="movies.js"></script><script src="player.js"></script><script>const list=document.getElementById('movieList');if(!window.movies.length)list.innerHTML='<div class="empty">🍿 Movies Coming Soon! Add movies in movies.js</div>';window.movies.forEach(m=>{const c=document.createElement('div');c.className='item';const img=document.createElement('img');img.src=m.image||'';const h=document.createElement('h3');h.textContent=m.name;const b=document.createElement('button');b.className='btn';b.textContent='▶ Watch Movie';b.onclick=()=>playVideo(m.url,m.name);c.append(img,h,b);list.append(c)});</script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UMRANI TV — Movies</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.movie-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+ gap:15px;
+}
+.movie-card{
+ background:#171717;
+ border:1px solid #333;
+ border-radius:12px;
+ padding:12px;
+ text-align:center;
+ color:white;
+}
+.movie-poster{
+ height:110px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:48px;
+ background:#252525;
+ border-radius:9px;
+ margin-bottom:10px;
+}
+.movie-card h3{
+ font-size:15px;
+ min-height:40px;
+}
+.movie-card .btn{
+ display:inline-block;
+ text-decoration:none;
+ margin-top:8px;
+}
+</style>
+</head>
+
+<body>
+<header class="topbar">
+<a class="brand" href="index.html">UMRANI <span>TV</span></a>
+</header>
+
+<main class="page">
+<a class="back" href="index.html">← Home</a>
+<h1 class="title">🍿🎥 Movies 2026</h1>
+<p>Apni pasand ki movie select karein aur YouTube par dekhein.</p>
+
+<div id="movieList" class="movie-grid"></div>
+</main>
+
+<script>
+const movies = [
+"Arjun Son of Vyjayanthi Hindi Dubbed Full Movie",
+"Kaapa Hindi Dubbed Full Movie",
+"Mission Fauji Hindi Full Movie",
+"Bheema Hindi Dubbed Full Movie",
+"PT Sir Hindi Dubbed Full Movie",
+"Gatta Kusthi Hindi Dubbed Full Movie",
+"Satyabhama Hindi Dubbed Full Movie",
+"FIR Hindi Dubbed Full Movie",
+"Das Ka Dhamki Hindi Dubbed Full Movie",
+"Bimbisara Hindi Dubbed Full Movie",
+"Bhairavam Hindi Dubbed Full Movie",
+"Maaman Hindi Dubbed Full Movie",
+"45 Forty Five Hindi Dubbed Full Movie",
+"Vadam Hindi Dubbed Full Movie",
+"Marco Hindi Dubbed Full Movie",
+"Geetha Govindam Hindi Dubbed Full Movie",
+"Thuppakki Munai Hindi Dubbed Full Movie",
+"Race Gurram Hindi Dubbed Full Movie",
+"Shivam Hindi Dubbed Full Movie",
+"Banaras Hindi Dubbed Full Movie"
+];
+
+const list = document.getElementById("movieList");
+
+movies.forEach((name,index)=>{
+ const card = document.createElement("div");
+ card.className = "movie-card";
+
+ const poster = document.createElement("div");
+ poster.className = "movie-poster";
+ poster.textContent = "🍿";
+
+ const title = document.createElement("h3");
+ title.textContent = name;
+
+ const button = document.createElement("a");
+ button.className = "btn";
+ button.textContent = "▶ Watch Movie";
+ button.href = "https://www.youtube.com/results?search_query=" +
+               encodeURIComponent(name + " official full movie");
+ button.target = "_blank";
+ button.rel = "noopener noreferrer";
+
+ card.append(poster,title,button);
+ list.appendChild(card);
+});
+</script>
+</body>
+</html>
