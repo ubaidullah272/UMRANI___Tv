@@ -14,6 +14,12 @@
     .category-card small{color:#aaa;font-size:12px}
     .section-head{text-align:center;color:#ffe34d;margin:22px 0 8px}
     .hidden{display:none!important}
+    .coming-soon{width:min(100%,560px);margin:38px auto;padding:34px 20px;text-align:center;border:1px solid #8b3827;border-radius:20px;background:radial-gradient(circle at 50% 0%,#482018 0%,#171010 48%,#080808 100%);box-shadow:0 0 22px #a20b0038;color:#fff}
+    .coming-soon-icon{font-size:42px;margin-bottom:8px}
+    .coming-soon h2{margin:8px 0 16px;color:#ff9d35;font-size:clamp(32px,7vw,46px);font-weight:900;text-shadow:0 0 14px #ff5a2b99}
+    .coming-soon h3{margin:0 0 14px;color:#fff;font-size:clamp(25px,5.5vw,34px);font-weight:900}
+    .coming-soon p{margin:0 0 24px;color:#ffd18b;font-size:clamp(19px,4.5vw,25px);font-weight:800;line-height:1.6}
+    .coming-soon strong{color:#ff9d35;letter-spacing:1.5px;font-size:clamp(22px,5vw,30px);font-weight:900;text-shadow:0 0 12px #ff5a2b88}
     @media(max-width:500px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.category-art{height:125px;font-size:52px}.category-card{padding:10px}.category-card strong{font-size:16px}}
   </style>
 </head>
@@ -92,8 +98,10 @@
         card.append(img,name,button);dramaList.append(card);
       });
     }else{
-      const labels={turkish:'Turkish dramas will be added here later.',indian:'Indian dramas will be added here later.',sindhi:'Sindhi dramas will be added here later.'};
-      dramaList.innerHTML='<div class="empty">'+labels[category]+'</div>';
+      const comingSoon=document.createElement('div');
+      comingSoon.className='coming-soon';
+      comingSoon.innerHTML='<div class="coming-soon-icon">🚧</div><h2>🚧 COMING SOON 🚧</h2><h3>ارے جناب! ذرا صبر کریں 😎</h3><p>ڈرامے آنے والے ہیں، ابھی پردہ اٹھنا باقی ہے! 🍿</p><strong>❤️ UMRANI TV ❤️</strong>';
+      dramaList.appendChild(comingSoon);
     }
   }
   function backToCategories(){hideAllSections();categoryHome.classList.remove('hidden');}
