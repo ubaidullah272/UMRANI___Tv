@@ -1,1 +1,117 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dramas</title><link rel="stylesheet" href="style.css"></head><body><header class="topbar"><a class="brand" href="index.html">𓆩UM꧊ꝛ͢𓂃aNi <span>TV</span></a></header><main class="page"><a class="back" href="index.html">← Home</a><h1 class="title">🎭 All Dramas</h1><p style="text-align:center;margin:12px 0 20px"><a class="btn" href="turkish-dramas.html">🇹🇷 Turkish Dramas</a></p><div id="dramaList" class="items"></div><section id="episodes" style="display:none"><button class="back" onclick="backToList()">← Dramas</button><h2 id="dramaName" class="subhead"></h2><img id="poster" class="poster"><div id="episodeList" class="items"></div></section><section id="player" class="player"><h3 id="playerTitle"></h3><div id="frame" class="frame"></div><div class="controls"><label>Brightness <input type="range" min="50" max="150" value="100" oninput="brightness(this.value)"></label><label>Volume <input type="range" min="0" max="100" value="80" oninput="volume(this.value)"><span id="volumeValue">80%</span></label><button class="btn" onclick="fullscreen()">Fullscreen</button><button class="btn close" onclick="closePlayer()">Close ✕</button></div></section></main><script src="dramas.js"></script><script src="player.js"></script><script>const dl=document.getElementById('dramaList');function backToList(){closePlayer();dl.style.display='grid';document.getElementById('episodes').style.display='none'}if(!window.dramas.length)dl.innerHTML='<div class="empty">No dramas added yet.</div>';window.dramas.forEach((d,i)=>{const c=document.createElement('div');c.className='item';const img=document.createElement('img');img.src=d.image;const h=document.createElement('h3');h.textContent=d.name;const b=document.createElement('button');b.className='btn';b.textContent='View Episodes';b.onclick=()=>showEpisodes(i);c.append(img,h,b);dl.append(c)});function showEpisodes(i){const d=window.dramas[i];dl.style.display='none';document.getElementById('episodes').style.display='block';document.getElementById('dramaName').textContent=d.name;document.getElementById('poster').src=d.image;const list=document.getElementById('episodeList');list.innerHTML='';(d.episodes||[]).forEach((e,j)=>{const c=document.createElement('div');c.className='item';const h=document.createElement('h3');h.textContent=e.name||'Episode '+(j+1);const b=document.createElement('button');b.className='btn';b.textContent='▶ Watch Episode';b.onclick=()=>playVideo(e.url,h.textContent);c.append(h,b);list.append(c)});if(!d.episodes||!d.episodes.length)list.innerHTML='<div class="empty">Episodes coming soon.</div>'}</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>UMRANI TV - Dramas</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:17px;margin-top:24px}
+    .category-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;background:linear-gradient(145deg,#19100f,#080808);border:1px solid #63251d;border-radius:16px;color:#fff;text-decoration:none;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;min-width:0}
+    .category-card:hover{transform:translateY(-3px);border-color:#ff4938;box-shadow:0 0 16px #a20b004d}
+    .category-art{width:100%;height:155px;border-radius:11px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:66px;background:radial-gradient(circle at 50% 35%,#4b1b16,#151010 65%,#080808);border:1px solid #42201b}.category-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.category-art .placeholder{position:relative;z-index:1;text-shadow:0 2px 12px #000}.category-art img:not([src=""]){ }
+    .category-card strong{font-size:19px;color:#ffe34d;text-align:center}
+    .category-card small{color:#aaa;font-size:12px}
+    .section-head{text-align:center;color:#ffe34d;margin:22px 0 8px}
+    .hidden{display:none!important}
+    @media(max-width:500px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.category-art{height:125px;font-size:52px}.category-card{padding:10px}.category-card strong{font-size:16px}}
+  </style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="index.html">𓆩UM꧊ꝛ͢𓂃aNi <span>TV</span></a></header>
+<main class="page">
+  <a class="back" href="index.html">← Home</a>
+  <section id="categoryHome">
+    <h1 class="title">🎭 Drama Categories</h1>
+    <p class="note" style="margin:0;color:#aaa">Choose your drama category</p>
+    <div class="category-grid">
+      <button class="category-card" type="button" onclick="openCategory('pakistani')">
+        <div class="category-art"><span class="placeholder">🇵🇰</span><img src="images/pakistani.jpg" alt="Pakistani Dramas" onerror="this.style.display='none'"></div>
+        <strong>Pakistani Dramas</strong><small>پاکستانی ڈرامے</small>
+      </button>
+      <button class="category-card" type="button" onclick="openCategory('turkish')">
+        <div class="category-art"><span class="placeholder">🇹🇷</span><img src="images/turkish.jpg" alt="Turkish Dramas" onerror="this.style.display='none'"></div>
+        <strong>Turkish Dramas</strong><small>ترکش ڈرامے</small>
+      </button>
+      <button class="category-card" type="button" onclick="openCategory('indian')">
+        <div class="category-art"><span class="placeholder">🇮🇳</span><img src="images/indian.jpg" alt="Indian Dramas" onerror="this.style.display='none'"></div>
+        <strong>Indian Dramas</strong><small>انڈین ڈرامے</small>
+      </button>
+      <button class="category-card" type="button" onclick="openCategory('sindhi')">
+        <div class="category-art"><span class="placeholder">🌸</span><img src="images/sindhi.jpg" alt="Sindhi Dramas" onerror="this.style.display='none'"></div>
+        <strong>Sindhi Dramas</strong><small>سنڌي ڊراما</small>
+      </button>
+    </div>
+  </section>
+
+  <section id="categoryView" class="hidden">
+    <button class="back" type="button" onclick="backToCategories()">← All Categories</button>
+    <h1 class="title" id="categoryTitle"></h1>
+    <div id="dramaList" class="items"></div>
+  </section>
+
+  <section id="episodes" class="hidden">
+    <button class="back" type="button" onclick="backToDramaList()">← Back to Dramas</button>
+    <h2 id="dramaName" class="subhead"></h2>
+    <img id="poster" class="poster" alt="Drama poster">
+    <div id="episodeList" class="items"></div>
+  </section>
+
+  <section id="player" class="player">
+    <h3 id="playerTitle"></h3><div id="frame" class="frame"></div>
+    <div class="controls">
+      <label>Brightness <input type="range" min="50" max="150" value="100" oninput="brightness(this.value)"></label>
+      <label>Volume <input type="range" min="0" max="100" value="80" oninput="volume(this.value)"><span id="volumeValue">80%</span></label>
+      <button class="btn" onclick="fullscreen()">Fullscreen</button>
+      <button class="btn close" onclick="closePlayer()">Close ✕</button>
+    </div>
+  </section>
+</main>
+<script src="dramas.js"></script>
+<script src="player.js"></script>
+<script>
+  const categoryHome=document.getElementById('categoryHome');
+  const categoryView=document.getElementById('categoryView');
+  const dramaList=document.getElementById('dramaList');
+  const episodes=document.getElementById('episodes');
+  const categoryNames={pakistani:'🇵🇰 Pakistani Dramas',turkish:'🇹🇷 Turkish Dramas',indian:'🇮🇳 Indian Dramas',sindhi:'🌸 Sindhi Dramas'};
+  let currentCategory='';
+  function hideAllSections(){categoryHome.classList.add('hidden');categoryView.classList.add('hidden');episodes.classList.add('hidden');closePlayer();}
+  function openCategory(category){
+    currentCategory=category;hideAllSections();categoryView.classList.remove('hidden');
+    document.getElementById('categoryTitle').textContent=categoryNames[category];
+    dramaList.innerHTML='';
+    if(category==='pakistani'){
+      const list=window.dramas||[];
+      if(!list.length){dramaList.innerHTML='<div class="empty">No Pakistani dramas added yet.</div>';return;}
+      list.forEach((d,i)=>{
+        const card=document.createElement('div');card.className='item';
+        const img=document.createElement('img');img.src=d.image||'';img.alt=d.name+' poster';
+        const name=document.createElement('h3');name.textContent=d.name;
+        const button=document.createElement('button');button.className='btn';button.textContent='View Episodes';button.onclick=()=>showEpisodes(i);
+        card.append(img,name,button);dramaList.append(card);
+      });
+    }else{
+      const labels={turkish:'Turkish dramas will be added here later.',indian:'Indian dramas will be added here later.',sindhi:'Sindhi dramas will be added here later.'};
+      dramaList.innerHTML='<div class="empty">'+labels[category]+'</div>';
+    }
+  }
+  function backToCategories(){hideAllSections();categoryHome.classList.remove('hidden');}
+  function backToDramaList(){closePlayer();episodes.classList.add('hidden');categoryView.classList.remove('hidden');}
+  function showEpisodes(i){
+    const d=(window.dramas||[])[i];if(!d)return;
+    categoryView.classList.add('hidden');episodes.classList.remove('hidden');
+    document.getElementById('dramaName').textContent=d.name;
+    document.getElementById('poster').src=d.image||'';
+    const list=document.getElementById('episodeList');list.innerHTML='';
+    (d.episodes||[]).forEach((e,j)=>{
+      const card=document.createElement('div');card.className='item';
+      const heading=document.createElement('h3');heading.textContent=e.name||'Episode '+(j+1);
+      const button=document.createElement('button');button.className='btn';button.textContent='▶ Watch Episode';button.onclick=()=>playVideo(e.url,heading.textContent);
+      card.append(heading,button);list.append(card);
+    });
+    if(!d.episodes||!d.episodes.length)list.innerHTML='<div class="empty">Episodes coming soon.</div>';
+  }
+</script>
+</body>
+</html>
