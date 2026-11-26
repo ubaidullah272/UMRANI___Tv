@@ -1,178 +1,389 @@
-</body>
-</html>
 
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>UMRANI TV - Dramas</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:17px;margin-top:24px}
-    .category-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;background:linear-gradient(145deg,#19100f,#080808);border:1px solid #63251d;border-radius:16px;color:#fff;text-decoration:none;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;min-width:0}
-    .category-card:hover{transform:translateY(-3px);border-color:#ff4938;box-shadow:0 0 16px #a20b004d}
-    .category-art{width:100%;height:155px;border-radius:11px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:66px;background:radial-gradient(circle at 50% 35%,#4b1b16,#151010 65%,#080808);border:1px solid #42201b}
-    .category-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-    .category-card strong{font-size:19px;color:#ffe34d;text-align:center}
-    .category-card small{color:#aaa;font-size:12px}
-    .section-head{text-align:center;color:#ffe34d;margin:22px 0 8px}
-    .hidden{display:none!important}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UMRANI TV - Dramas</title>
+<link rel="stylesheet" href="style.css">
 
-    /* Distinct cinematic category transition */
-    .category-card{position:relative;overflow:hidden;isolation:isolate}
-    .category-card:after{content:"";position:absolute;top:-130%;left:-55%;width:42%;height:360%;transform:rotate(28deg);background:linear-gradient(90deg,transparent,#ffb45b55,transparent);transition:left .65s ease;z-index:2;pointer-events:none}
-    .category-card:hover:after{left:130%}
-    .category-card:active{transform:scale(.96)}
-    .category-transition{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at center,#35130f 0%,#100909 48%,#030303 100%);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease}
-    .category-transition.show{opacity:1;visibility:visible}
-    .transition-orbit{position:absolute;width:min(76vw,340px);aspect-ratio:1;border:1px solid #ff7a36aa;border-radius:50%;box-shadow:0 0 22px #ff4b2b66,inset 0 0 22px #ff4b2b33;animation:orbitPulse 1.15s ease-in-out infinite}
-    .transition-orbit:before,.transition-orbit:after{content:"";position:absolute;inset:14px;border:1px dashed #ffc07888;border-radius:50%;animation:orbitSpin 5s linear infinite}
-    .transition-orbit:after{inset:32px;border-style:solid;border-color:#ff583f66;animation-direction:reverse;animation-duration:3.5s}
-    .transition-content{position:relative;text-align:center;max-width:90%;animation:transitionPop .72s cubic-bezier(.2,.8,.2,1) both}
-    .transition-emoji{font-size:clamp(58px,16vw,88px);filter:drop-shadow(0 0 18px #ff713b);animation:emojiFloat .9s ease-in-out infinite alternate}
-    .transition-content h2{margin:14px 0 8px;color:#ffad52;font-size:clamp(25px,7vw,38px);font-weight:900;letter-spacing:2px;text-shadow:0 0 16px #ff4c2b}
-    .transition-content p{margin:0;color:#fff;font-size:14px;letter-spacing:3px;text-transform:uppercase}
-    .transition-line{height:3px;width:min(62vw,230px);margin:22px auto 0;border-radius:9px;background:linear-gradient(90deg,transparent,#ff9b42,#ff3d32,transparent);box-shadow:0 0 14px #ff693b;animation:lineGlow .8s ease-in-out infinite alternate}
-    #categoryView.reveal,#episodes.reveal{animation:sectionReveal .65s cubic-bezier(.2,.8,.2,1) both}
-    .coming-soon{animation:comingReveal .8s cubic-bezier(.2,.8,.2,1) both}
-    @keyframes orbitPulse{0%,100%{transform:scale(.92);opacity:.65}50%{transform:scale(1.04);opacity:1}}
-    @keyframes orbitSpin{to{transform:rotate(360deg)}}
-    @keyframes transitionPop{0%{opacity:0;transform:translateY(28px) scale(.78);filter:blur(8px)}65%{opacity:1;filter:blur(0)}100%{transform:translateY(0) scale(1)}}
-    @keyframes emojiFloat{from{transform:translateY(5px) rotate(-5deg)}to{transform:translateY(-7px) rotate(5deg)}}
-    @keyframes lineGlow{from{opacity:.55;transform:scaleX(.72)}to{opacity:1;transform:scaleX(1)}}
-    @keyframes sectionReveal{from{opacity:0;transform:translateY(22px);filter:blur(5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
-    @keyframes comingReveal{from{opacity:0;transform:scale(.86) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-    @media(prefers-reduced-motion:reduce){.category-transition,.transition-orbit,.transition-content,.transition-emoji,.transition-line,#categoryView.reveal,#episodes.reveal,.coming-soon{animation:none!important;transition:none!important}}
-    .coming-soon{width:min(100%,560px);margin:38px auto;padding:34px 20px;text-align:center;border:1px solid #8b3827;border-radius:20px;background:radial-gradient(circle at 50% 0%,#482018 0%,#171010 48%,#080808 100%);box-shadow:0 0 22px #a20b0038;color:#fff}
-    .coming-soon-icon{font-size:42px;margin-bottom:8px}
-    .coming-soon h2{margin:8px 0 16px;color:#ff9d35;font-size:clamp(32px,7vw,46px);font-weight:900;text-shadow:0 0 14px #ff5a2b99}
-    .coming-soon h3{margin:0 0 14px;color:#fff;font-size:clamp(25px,5.5vw,34px);font-weight:900}
-    .coming-soon p{margin:0 0 24px;color:#ffd18b;font-size:clamp(19px,4.5vw,25px);font-weight:800;line-height:1.6}
-    .coming-soon strong{color:#ff9d35;letter-spacing:1.5px;font-size:clamp(22px,5vw,30px);font-weight:900;text-shadow:0 0 12px #ff5a2b88}
-    @media(max-width:500px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.category-art{height:125px;font-size:52px}.category-card{padding:10px}.category-card strong{font-size:16px}}
-  </style>
+<style>
+.category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:17px;margin-top:24px}
+.category-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;background:linear-gradient(145deg,#19100f,#080808);border:1px solid #63251d;border-radius:16px;color:#fff;text-decoration:none;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;min-width:0;position:relative;overflow:hidden;isolation:isolate}
+.category-card:hover{transform:translateY(-3px);border-color:#ff4938;box-shadow:0 0 16px #a20b004d}
+.category-card:after{content:"";position:absolute;top:-130%;left:-55%;width:42%;height:360%;transform:rotate(28deg);background:linear-gradient(90deg,transparent,#ffb45b55,transparent);transition:left .65s ease;z-index:2;pointer-events:none}
+.category-card:hover:after{left:130%}
+.category-card:active{transform:scale(.96)}
+.category-art{width:100%;height:155px;border-radius:11px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 35%,#4b1b16,#151010 65%,#080808);border:1px solid #42201b}
+.category-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.category-card strong{font-size:19px;color:#ffe34d;text-align:center}
+.category-card small{color:#aaa;font-size:12px}
+.hidden{display:none!important}
+
+.section-head{text-align:center;color:#ffe34d;margin:22px 0 8px}
+
+/* CINEMATIC ACTION INTRO */
+.category-transition{
+position:fixed;inset:0;z-index:9999;
+display:flex;align-items:center;justify-content:center;
+padding:20px;background:#030303;
+opacity:0;visibility:hidden;pointer-events:none;
+transition:opacity .25s ease,visibility .25s ease;
+overflow:hidden;
+}
+.category-transition.show{opacity:1;visibility:visible}
+.transition-bg{
+position:absolute;inset:-20px;
+background:radial-gradient(circle,#40130d 0%,#160706 45%,#020202 100%);
+}
+.transition-bg:before{
+content:"";position:absolute;inset:0;
+background:linear-gradient(120deg,transparent,#ff3d1c22,transparent);
+animation:bgFlash 1s infinite;
+}
+.transition-image-wrap{
+position:relative;width:min(78vw,370px);height:min(68vh,480px);
+border-radius:20px;overflow:hidden;
+border:2px solid #ff783b;
+box-shadow:0 0 20px #ff3d1c,0 0 65px #ff3d1c88;
+transform:scale(.25) rotate(-8deg);
+opacity:0;
+}
+.category-transition.show .transition-image-wrap{
+animation:actionImage .9s cubic-bezier(.15,.8,.2,1) forwards;
+}
+.transition-image{
+width:100%;height:100%;object-fit:cover;display:block;
+}
+.transition-image-wrap:after{
+content:"";position:absolute;inset:0;
+background:linear-gradient(0deg,#080000bb,transparent 55%,#ff4c2922);
+}
+.transition-ring{
+position:absolute;width:min(95vw,440px);aspect-ratio:1;
+border:2px solid #ff653b;border-radius:50%;
+box-shadow:0 0 25px #ff3d1c,inset 0 0 25px #ff3d1c66;
+opacity:0;pointer-events:none;
+}
+.category-transition.show .transition-ring{
+animation:ringBlast 1.1s ease-out forwards;
+}
+.transition-ring:before,.transition-ring:after{
+content:"";position:absolute;inset:18px;
+border:1px dashed #ffc078;border-radius:50%;
+animation:ringSpin 4s linear infinite;
+}
+.transition-ring:after{
+inset:40px;border-style:solid;border-color:#ff583f;
+animation-direction:reverse;animation-duration:2.5s;
+}
+.transition-title{
+position:absolute;bottom:10%;
+left:0;width:100%;text-align:center;
+color:#ffb04f;font-size:clamp(25px,7vw,40px);
+font-weight:900;letter-spacing:2px;
+text-shadow:0 0 10px #ff4c2b,0 0 25px #ff4c2b;
+opacity:0;transform:translateY(35px);
+z-index:5;padding:0 12px;
+}
+.category-transition.show .transition-title{
+animation:titleStrike .65s .35s ease-out forwards;
+}
+.transition-flash{
+position:absolute;inset:0;background:white;
+opacity:0;pointer-events:none;
+}
+.category-transition.show .transition-flash{
+animation:flashStrike .5s .15s ease-out;
+}
+@keyframes actionImage{
+0%{opacity:0;transform:scale(.25) rotate(-8deg);filter:brightness(3) blur(12px)}
+55%{opacity:1;transform:scale(1.08) rotate(2deg);filter:brightness(1.8) blur(0)}
+75%{transform:scale(.96) rotate(-1deg)}
+100%{opacity:1;transform:scale(1) rotate(0);filter:brightness(1)}
+}
+@keyframes ringBlast{
+0%{opacity:0;transform:scale(.2) rotate(0)}
+45%{opacity:1}
+100%{opacity:0;transform:scale(1.5) rotate(100deg)}
+}
+@keyframes ringSpin{to{transform:rotate(360deg)}}
+@keyframes titleStrike{
+0%{opacity:0;transform:translateY(35px) scale(.7);filter:blur(8px)}
+70%{opacity:1;transform:translateY(-5px) scale(1.08);filter:blur(0)}
+100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes flashStrike{
+0%{opacity:0}
+15%{opacity:.8}
+100%{opacity:0}
+}
+@keyframes bgFlash{
+0%,100%{opacity:.3}
+50%{opacity:1}
+}
+#categoryView.reveal,#episodes.reveal{animation:sectionReveal .65s cubic-bezier(.2,.8,.2,1) both}
+@keyframes sectionReveal{
+from{opacity:0;transform:translateY(22px);filter:blur(5px)}
+to{opacity:1;transform:translateY(0);filter:blur(0)}
+}
+.coming-soon{animation:comingReveal .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes comingReveal{
+from{opacity:0;transform:scale(.86) translateY(20px)}
+to{opacity:1;transform:scale(1) translateY(0)}
+}
+.coming-soon{
+width:min(100%,560px);margin:38px auto;padding:34px 20px;
+text-align:center;border:1px solid #8b3827;border-radius:20px;
+background:radial-gradient(circle at 50% 0%,#482018 0%,#171010 48%,#080808 100%);
+box-shadow:0 0 22px #a20b0038;color:#fff
+}
+.coming-soon-icon{font-size:42px;margin-bottom:8px}
+.coming-soon h2{margin:8px 0 16px;color:#ff9d35;font-size:clamp(32px,7vw,46px);font-weight:900;text-shadow:0 0 14px #ff5a2b99}
+.coming-soon h3{margin:0 0 14px;color:#fff;font-size:clamp(25px,5.5vw,34px);font-weight:900}
+.coming-soon p{margin:0 0 24px;color:#ffd18b;font-size:clamp(19px,4.5vw,25px);font-weight:800;line-height:1.6}
+.coming-soon strong{color:#ff9d35;letter-spacing:1.5px;font-size:clamp(22px,5vw,30px);font-weight:900;text-shadow:0 0 12px #ff5a2b88}
+@media(max-width:500px){
+.category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.category-art{height:125px}
+.category-card{padding:10px}
+.category-card strong{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){
+.category-transition,.transition-ring,.transition-image-wrap,.transition-title,.transition-flash{animation:none!important;transition:none!important}
+}
+</style>
 </head>
+
 <body>
-<header class="topbar"><a class="brand" href="index.html">𓆩UM꧊ꝛ͢𓂃aNi <span>TV</span></a></header>
+<header class="topbar">
+<a class="brand" href="index.html">𓆩UM꧊ꝛ͢𓂃aNi <span>TV</span></a>
+</header>
+
 <main class="page">
-  <a class="back" href="index.html">← Home</a>
-  <section id="categoryHome">
-    <h1 class="title">🎭 Drama Categories</h1>
-    <p class="note" style="margin:0;color:#aaa">Choose your drama category</p>
-    <div class="category-grid">
-      <button class="category-card" type="button" onclick="openCategory('pakistani')">
-        <div class="category-art"><img src="logos/drama/pakistani.jpg" alt="Pakistani Dramas" onerror="this.style.display='none'"></div>
-        <strong>Pakistani Dramas</strong><small>پاکستانی ڈرامے</small>
-      </button>
-      <button class="category-card" type="button" onclick="openCategory('turkish')">
-        <div class="category-art"><img src="logos/drama/turkish.jpg" alt="Turkish Dramas" onerror="this.style.display='none'"></div>
-        <strong>Turkish Dramas</strong><small>ترکش ڈرامے</small>
-      </button>
-      <button class="category-card" type="button" onclick="openCategory('indian')">
-        <div class="category-art"><img src="logos/drama/indian.jpg" alt="Indian Dramas" onerror="this.style.display='none'"></div>
-        <strong>Indian Dramas</strong><small>انڈین ڈرامے</small>
-      </button>
-      <button class="category-card" type="button" onclick="openCategory('sindhi')">
-        <div class="category-art"><img src="logos/drama/sindhi.jpg" alt="Sindhi Dramas" onerror="this.style.display='none'"></div>
-        <strong>Sindhi Dramas</strong><small>سنڌي ڊراما</small>
-      </button>
-    </div>
-  </section>
+<a class="back" href="index.html">← Home</a>
 
-  <section id="categoryView" class="hidden">
-    <button class="back" type="button" onclick="backToCategories()">← All Categories</button>
-    <h1 class="title" id="categoryTitle"></h1>
-    <div id="dramaList" class="items"></div>
-  </section>
+<section id="categoryHome">
+<h1 class="title">🎭 Drama Categories</h1>
+<p class="note" style="margin:0;color:#aaa">Choose your drama category</p>
 
-  <section id="episodes" class="hidden">
-    <button class="back" type="button" onclick="backToDramaList()">← Back to Dramas</button>
-    <h2 id="dramaName" class="subhead"></h2>
-    <img id="poster" class="poster" alt="Drama poster">
-    <div id="episodeList" class="items"></div>
-  </section>
+<div class="category-grid">
 
-  <section id="player" class="player">
-    <h3 id="playerTitle"></h3><div id="frame" class="frame"></div>
-    <div class="controls">
-      <label>Brightness <input type="range" min="50" max="150" value="100" oninput="brightness(this.value)"></label>
-      <label>Volume <input type="range" min="0" max="100" value="80" oninput="volume(this.value)"><span id="volumeValue">80%</span></label>
-      <button class="btn" onclick="fullscreen()">Fullscreen</button>
-      <button class="btn close" onclick="closePlayer()">Close ✕</button>
-    </div>
-  </section>
-</main>
-<div id="categoryTransition" class="category-transition" aria-hidden="true">
-  <div class="transition-orbit"></div>
-  <div class="transition-content">
-    <div class="transition-emoji" id="transitionEmoji">🎭</div>
-    <h2 id="transitionTitle">UMRANI TV</h2>
-    <p>GET READY FOR THE SHOW</p>
-    <div class="transition-line"></div>
-  </div>
+<button class="category-card" type="button" onclick="openCategory('pakistani')">
+<div class="category-art">
+<img src="logos/drama/pakistani.jpg" alt="Pakistani Dramas" onerror="this.style.display='none'">
 </div>
+<strong>Pakistani Dramas</strong><small>پاکستانی ڈرامے</small>
+</button>
+
+<button class="category-card" type="button" onclick="openCategory('turkish')">
+<div class="category-art">
+<img src="logos/drama/turkish.jpg" alt="Turkish Dramas" onerror="this.style.display='none'">
+</div>
+<strong>Turkish Dramas</strong><small>ترکش ڈرامے</small>
+</button>
+
+<button class="category-card" type="button" onclick="openCategory('indian')">
+<div class="category-art">
+<img src="logos/drama/indian.jpg" alt="Indian Dramas" onerror="this.style.display='none'">
+</div>
+<strong>Indian Dramas</strong><small>انڈین ڈرامے</small>
+</button>
+
+<button class="category-card" type="button" onclick="openCategory('sindhi')">
+<div class="category-art">
+<img src="logos/drama/sindhi.jpg" alt="Sindhi Dramas" onerror="this.style.display='none'">
+</div>
+<strong>Sindhi Dramas</strong><small>سنڌي ڊراما</small>
+</button>
+
+</div>
+</section>
+
+<section id="categoryView" class="hidden">
+<button class="back" type="button" onclick="backToCategories()">← All Categories</button>
+<h1 class="title" id="categoryTitle"></h1>
+<div id="dramaList" class="items"></div>
+</section>
+
+<section id="episodes" class="hidden">
+<button class="back" type="button" onclick="backToDramaList()">← Back to Dramas</button>
+<h2 id="dramaName" class="subhead"></h2>
+<img id="poster" class="poster" alt="Drama poster">
+<div id="episodeList" class="items"></div>
+</section>
+
+<section id="player" class="player">
+<h3 id="playerTitle"></h3>
+<div id="frame" class="frame"></div>
+<div class="controls">
+<label>Brightness <input type="range" min="50" max="150" value="100" oninput="brightness(this.value)"></label>
+<label>Volume <input type="range" min="0" max="100" value="80" oninput="volume(this.value)"><span id="volumeValue">80%</span></label>
+<button class="btn" onclick="fullscreen()">Fullscreen</button>
+<button class="btn close" onclick="closePlayer()">Close ✕</button>
+</div>
+</section>
+</main>
+
+<div id="categoryTransition" class="category-transition" aria-hidden="true">
+<div class="transition-bg"></div>
+<div class="transition-ring"></div>
+<div class="transition-image-wrap">
+<img id="transitionImage" class="transition-image" src="" alt="Category preview">
+</div>
+<div id="transitionTitle" class="transition-title">UMRANI TV</div>
+<div class="transition-flash"></div>
+</div>
+
 <script src="dramas.js"></script>
 <script src="player.js"></script>
+
 <script>
-  const categoryHome=document.getElementById('categoryHome');
-  const categoryView=document.getElementById('categoryView');
-  const dramaList=document.getElementById('dramaList');
-  const episodes=document.getElementById('episodes');
-  const categoryNames={pakistani:'🇵🇰 Pakistani Dramas',turkish:'🇹🇷 Turkish Dramas',indian:'🇮🇳 Indian Dramas',sindhi:'🌸 Sindhi Dramas'};
-  let currentCategory='';
-  let transitionTimer=null;
-  const categoryTransition=document.getElementById('categoryTransition');
-  const categoryEmojis={pakistani:'🇵🇰',turkish:'🇹🇷',indian:'🇮🇳',sindhi:'🌸'};
-  function hideAllSections(){categoryHome.classList.add('hidden');categoryView.classList.add('hidden');episodes.classList.add('hidden');closePlayer();}
-  function openCategory(category){
-    currentCategory=category;
-    if(transitionTimer)clearTimeout(transitionTimer);
-    document.getElementById('transitionEmoji').textContent=categoryEmojis[category]||'🎭';
-    document.getElementById('transitionTitle').textContent=(categoryNames[category]||'UMRANI TV').replace(/^[^ ]+ /,'');
-    categoryTransition.classList.add('show');
-    categoryTransition.setAttribute('aria-hidden','false');
-    transitionTimer=setTimeout(()=>{
-      categoryTransition.classList.remove('show');
-      categoryTransition.setAttribute('aria-hidden','true');
-      hideAllSections();categoryView.classList.remove('hidden');
-      categoryView.classList.remove('reveal');void categoryView.offsetWidth;categoryView.classList.add('reveal');
-      document.getElementById('categoryTitle').textContent=categoryNames[category];
-      dramaList.innerHTML='';
-      if(category==='pakistani'){
-        const list=window.dramas||[];
-        if(!list.length){dramaList.innerHTML='<div class="empty">No Pakistani dramas added yet.</div>';return;}
-        list.forEach((d,i)=>{
-          const card=document.createElement('div');card.className='item';
-          const img=document.createElement('img');img.src=d.image||'';img.alt=d.name+' poster';
-          const name=document.createElement('h3');name.textContent=d.name;
-          const button=document.createElement('button');button.className='btn';button.textContent='View Episodes';button.onclick=()=>showEpisodes(i);
-          card.append(img,name,button);dramaList.append(card);
-        });
-      }else{
-        const comingSoon=document.createElement('div');
-        comingSoon.className='coming-soon';
-        comingSoon.innerHTML='<div class="coming-soon-icon">🚧</div><h2>🚧 COMING SOON 🚧</h2><h3>ارے جناب! ذرا صبر کریں 😎</h3><p>ڈرامے آنے والے ہیں، ابھی پردہ اٹھنا باقی ہے! 🍿</p><strong>❤️ UMRANI TV ❤️</strong>';
-        dramaList.appendChild(comingSoon);
-      }
-    },850);
-  }
-  function backToCategories(){hideAllSections();categoryHome.classList.remove('hidden');}
-  function backToDramaList(){closePlayer();episodes.classList.add('hidden');categoryView.classList.remove('hidden');}
-  function showEpisodes(i){
-    const d=(window.dramas||[])[i];if(!d)return;
-    categoryView.classList.add('hidden');episodes.classList.remove('hidden');episodes.classList.remove('reveal');void episodes.offsetWidth;episodes.classList.add('reveal');
-    document.getElementById('dramaName').textContent=d.name;
-    document.getElementById('poster').src=d.image||'';
-    const list=document.getElementById('episodeList');list.innerHTML='';
-    (d.episodes||[]).forEach((e,j)=>{
-      const card=document.createElement('div');card.className='item';
-      const heading=document.createElement('h3');heading.textContent=e.name||'Episode '+(j+1);
-      const button=document.createElement('button');button.className='btn';button.textContent='▶ Watch Episode';button.onclick=()=>playVideo(e.url,heading.textContent);
-      card.append(heading,button);list.append(card);
-    });
-    if(!d.episodes||!d.episodes.length)list.innerHTML='<div class="empty">Episodes coming soon.</div>';
-  }
+const categoryHome=document.getElementById('categoryHome');
+const categoryView=document.getElementById('categoryView');
+const dramaList=document.getElementById('dramaList');
+const episodes=document.getElementById('episodes');
+const categoryTransition=document.getElementById('categoryTransition');
+const transitionImage=document.getElementById('transitionImage');
+const transitionTitle=document.getElementById('transitionTitle');
+
+const categoryNames={
+pakistani:'Pakistani Dramas',
+turkish:'Turkish Dramas',
+indian:'Indian Dramas',
+sindhi:'Sindhi Dramas'
+};
+
+const categoryImages={
+pakistani:'logos/drama/pakistani.jpg',
+turkish:'logos/drama/turkish.jpg',
+indian:'logos/drama/indian.jpg',
+sindhi:'logos/drama/sindhi.jpg'
+};
+
+let currentCategory='';
+let transitionTimer=null;
+
+function hideAllSections(){
+categoryHome.classList.add('hidden');
+categoryView.classList.add('hidden');
+episodes.classList.add('hidden');
+closePlayer();
+}
+
+function openCategory(category){
+currentCategory=category;
+
+if(transitionTimer)clearTimeout(transitionTimer);
+
+transitionImage.src=categoryImages[category]||'';
+transitionImage.alt=categoryNames[category]||'UMRANI TV';
+transitionTitle.textContent=categoryNames[category]||'UMRANI TV';
+
+categoryTransition.classList.remove('show');
+void categoryTransition.offsetWidth;
+categoryTransition.classList.add('show');
+categoryTransition.setAttribute('aria-hidden','false');
+
+transitionTimer=setTimeout(()=>{
+categoryTransition.classList.remove('show');
+categoryTransition.setAttribute('aria-hidden','true');
+
+hideAllSections();
+categoryView.classList.remove('hidden');
+categoryView.classList.remove('reveal');
+void categoryView.offsetWidth;
+categoryView.classList.add('reveal');
+
+document.getElementById('categoryTitle').textContent=categoryNames[category]||'Dramas';
+dramaList.innerHTML='';
+
+if(category==='pakistani'){
+const list=window.dramas||[];
+
+if(!list.length){
+dramaList.innerHTML='<div class="empty">No Pakistani dramas added yet.</div>';
+return;
+}
+
+list.forEach((d,i)=>{
+const card=document.createElement('div');
+card.className='item';
+
+const img=document.createElement('img');
+img.src=d.image||'';
+img.alt=d.name+' poster';
+
+const name=document.createElement('h3');
+name.textContent=d.name;
+
+const button=document.createElement('button');
+button.className='btn';
+button.textContent='View Episodes';
+button.onclick=()=>showEpisodes(i);
+
+card.append(img,name,button);
+dramaList.append(card);
+});
+
+}else{
+const comingSoon=document.createElement('div');
+comingSoon.className='coming-soon';
+comingSoon.innerHTML='<div class="coming-soon-icon">🚧</div><h2>🚧 COMING SOON 🚧</h2><h3>ارے جناب! ذرا صبر کریں 😎</h3><p>ڈرامے آنے والے ہیں، ابھی پردہ اٹھنا باقی ہے! 🍿</p><strong>❤️ UMRANI TV ❤️</strong>';
+dramaList.appendChild(comingSoon);
+}
+},1500);
+}
+
+function backToCategories(){
+if(transitionTimer)clearTimeout(transitionTimer);
+categoryTransition.classList.remove('show');
+hideAllSections();
+categoryHome.classList.remove('hidden');
+}
+
+function backToDramaList(){
+closePlayer();
+episodes.classList.add('hidden');
+categoryView.classList.remove('hidden');
+}
+
+function showEpisodes(i){
+const d=(window.dramas||[])[i];
+if(!d)return;
+
+categoryView.classList.add('hidden');
+episodes.classList.remove('hidden');
+episodes.classList.remove('reveal');
+void episodes.offsetWidth;
+episodes.classList.add('reveal');
+
+document.getElementById('dramaName').textContent=d.name;
+document.getElementById('poster').src=d.image||'';
+
+const list=document.getElementById('episodeList');
+list.innerHTML='';
+
+(d.episodes||[]).forEach((e,j)=>{
+const card=document.createElement('div');
+card.className='item';
+
+const heading=document.createElement('h3');
+heading.textContent=e.name||'Episode '+(j+1);
+
+const button=document.createElement('button');
+button.className='btn';
+button.textContent='▶ Watch Episode';
+button.onclick=()=>playVideo(e.url,heading.textContent);
+
+card.append(heading,button);
+list.append(card);
+});
+
+if(!d.episodes||!d.episodes.length){
+list.innerHTML='<div class="empty">Episodes coming soon.</div>';
+}
+}
 </script>
 </body>
 </html>
