@@ -1,3 +1,6 @@
+</body>
+</html>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,11 +12,13 @@
     .category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:17px;margin-top:24px}
     .category-card{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;background:linear-gradient(145deg,#19100f,#080808);border:1px solid #63251d;border-radius:16px;color:#fff;text-decoration:none;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;min-width:0}
     .category-card:hover{transform:translateY(-3px);border-color:#ff4938;box-shadow:0 0 16px #a20b004d}
-    .category-art{width:100%;height:155px;border-radius:11px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:66px;background:radial-gradient(circle at 50% 35%,#4b1b16,#151010 65%,#080808);border:1px solid #42201b}.category-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.category-art .placeholder{position:relative;z-index:1;text-shadow:0 2px 12px #000}.category-art img:not([src=""]){ }
+    .category-art{width:100%;height:155px;border-radius:11px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:66px;background:radial-gradient(circle at 50% 35%,#4b1b16,#151010 65%,#080808);border:1px solid #42201b}
+    .category-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
     .category-card strong{font-size:19px;color:#ffe34d;text-align:center}
     .category-card small{color:#aaa;font-size:12px}
     .section-head{text-align:center;color:#ffe34d;margin:22px 0 8px}
     .hidden{display:none!important}
+
     /* Distinct cinematic category transition */
     .category-card{position:relative;overflow:hidden;isolation:isolate}
     .category-card:after{content:"";position:absolute;top:-130%;left:-55%;width:42%;height:360%;transform:rotate(28deg);background:linear-gradient(90deg,transparent,#ffb45b55,transparent);transition:left .65s ease;z-index:2;pointer-events:none}
@@ -57,19 +62,19 @@
     <p class="note" style="margin:0;color:#aaa">Choose your drama category</p>
     <div class="category-grid">
       <button class="category-card" type="button" onclick="openCategory('pakistani')">
-        <div class="category-art"><span class="placeholder">🇵🇰</span><img src="images/pakistani.jpg" alt="Pakistani Dramas" onerror="this.style.display='none'"></div>
+        <div class="category-art"><img src="logos/drama/pakistani.jpg" alt="Pakistani Dramas" onerror="this.style.display='none'"></div>
         <strong>Pakistani Dramas</strong><small>پاکستانی ڈرامے</small>
       </button>
       <button class="category-card" type="button" onclick="openCategory('turkish')">
-        <div class="category-art"><span class="placeholder">🇹🇷</span><img src="images/turkish.jpg" alt="Turkish Dramas" onerror="this.style.display='none'"></div>
+        <div class="category-art"><img src="logos/drama/turkish.jpg" alt="Turkish Dramas" onerror="this.style.display='none'"></div>
         <strong>Turkish Dramas</strong><small>ترکش ڈرامے</small>
       </button>
       <button class="category-card" type="button" onclick="openCategory('indian')">
-        <div class="category-art"><span class="placeholder">🇮🇳</span><img src="images/indian.jpg" alt="Indian Dramas" onerror="this.style.display='none'"></div>
+        <div class="category-art"><img src="logos/drama/indian.jpg" alt="Indian Dramas" onerror="this.style.display='none'"></div>
         <strong>Indian Dramas</strong><small>انڈین ڈرامے</small>
       </button>
       <button class="category-card" type="button" onclick="openCategory('sindhi')">
-        <div class="category-art"><span class="placeholder">🌸</span><img src="images/sindhi.jpg" alt="Sindhi Dramas" onerror="this.style.display='none'"></div>
+        <div class="category-art"><img src="logos/drama/sindhi.jpg" alt="Sindhi Dramas" onerror="this.style.display='none'"></div>
         <strong>Sindhi Dramas</strong><small>سنڌي ڊراما</small>
       </button>
     </div>
@@ -133,23 +138,23 @@
       hideAllSections();categoryView.classList.remove('hidden');
       categoryView.classList.remove('reveal');void categoryView.offsetWidth;categoryView.classList.add('reveal');
       document.getElementById('categoryTitle').textContent=categoryNames[category];
-    dramaList.innerHTML='';
-    if(category==='pakistani'){
-      const list=window.dramas||[];
-      if(!list.length){dramaList.innerHTML='<div class="empty">No Pakistani dramas added yet.</div>';return;}
-      list.forEach((d,i)=>{
-        const card=document.createElement('div');card.className='item';
-        const img=document.createElement('img');img.src=d.image||'';img.alt=d.name+' poster';
-        const name=document.createElement('h3');name.textContent=d.name;
-        const button=document.createElement('button');button.className='btn';button.textContent='View Episodes';button.onclick=()=>showEpisodes(i);
-        card.append(img,name,button);dramaList.append(card);
-      });
-    }else{
-      const comingSoon=document.createElement('div');
-      comingSoon.className='coming-soon';
-      comingSoon.innerHTML='<div class="coming-soon-icon">🚧</div><h2>🚧 COMING SOON 🚧</h2><h3>ارے جناب! ذرا صبر کریں 😎</h3><p>ڈرامے آنے والے ہیں، ابھی پردہ اٹھنا باقی ہے! 🍿</p><strong>❤️ UMRANI TV ❤️</strong>';
-      dramaList.appendChild(comingSoon);
-    }
+      dramaList.innerHTML='';
+      if(category==='pakistani'){
+        const list=window.dramas||[];
+        if(!list.length){dramaList.innerHTML='<div class="empty">No Pakistani dramas added yet.</div>';return;}
+        list.forEach((d,i)=>{
+          const card=document.createElement('div');card.className='item';
+          const img=document.createElement('img');img.src=d.image||'';img.alt=d.name+' poster';
+          const name=document.createElement('h3');name.textContent=d.name;
+          const button=document.createElement('button');button.className='btn';button.textContent='View Episodes';button.onclick=()=>showEpisodes(i);
+          card.append(img,name,button);dramaList.append(card);
+        });
+      }else{
+        const comingSoon=document.createElement('div');
+        comingSoon.className='coming-soon';
+        comingSoon.innerHTML='<div class="coming-soon-icon">🚧</div><h2>🚧 COMING SOON 🚧</h2><h3>ارے جناب! ذرا صبر کریں 😎</h3><p>ڈرامے آنے والے ہیں، ابھی پردہ اٹھنا باقی ہے! 🍿</p><strong>❤️ UMRANI TV ❤️</strong>';
+        dramaList.appendChild(comingSoon);
+      }
     },850);
   }
   function backToCategories(){hideAllSections();categoryHome.classList.remove('hidden');}
